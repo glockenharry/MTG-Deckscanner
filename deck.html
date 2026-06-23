@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Commander Deck</title>
+  <meta name="description" content="Commander Deck Detail-Seite"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+
+    :root {
+      --bg:           #0c0e12;
+      --surface:      #13161c;
+      --surface-2:    #1a1e27;
+      --surface-3:    #21263200;
+      --border:       rgba(255,255,255,.08);
+      --border-hi:    rgba(255,255,255,.16);
+      --text:         #eceef3;
+      --muted:        #8b95a8;
+      --faint:        #4a5262;
+      --accent:       #5eead4;
+      --accent-2:     #0d9488;
+      --accent-glow:  rgba(94,234,212,.18);
+      --error:        #f87171;
+      --success:      #4ade80;
+      --r-sm: 10px; --r-md: 16px; --r-lg: 22px; --r-xl: 28px;
+      --shadow-sm: 0 2px 8px #00000040;
+      --shadow-md: 0 8px 28px #00000055;
+      --shadow-lg: 0 24px 60px #00000070;
+      --max: 1080px;
+      --transition: 180ms cubic-bezier(.16,1,.3,1);
+    }
+    *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+    html { -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100dvh; line-height:1.6; }
+    img { display:block; max-width:100%; }
+    a { color:inherit; text-decoration:none; }
+    button { cursor:pointer; font:inherit; color:inherit; background:none; border:none; }
+    ::-webkit-scrollbar { width:5px; } ::-webkit-scrollbar-track { background:var(--bg); } ::-webkit-scrollbar-thumb { background:var(--surface-2); border-radius:99px; }
+    ::selection { background:rgba(94,234,212,.25); }
+    :focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
+
+    .wrap { width:min(calc(100% - 28px),var(--max)); margin:0 auto; }
+
+    /* --- TOPBAR --- */
+    .topbar {
+      position:sticky; top:0; z-index:200;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:0 20px; height:58px;
+      background:rgba(12,14,18,.85); backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--border);
+    }
+    .topbar-brand { display:flex; align-items:center; gap:10px; font-weight:600; font-size:.95rem; }
+    .topbar-logo {
+      width:34px; height:34px; border-radius:9px; display:grid; place-items:center;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      color:#041a18; font-weight:800; font-size:.8rem; font-family:'Cinzel',serif; flex-shrink:0;
+    }
+    .topbar-actions { display:flex; align-items:center; gap:8px; }
+    .btn-icon {
+      width:36px; height:36px; border-radius:var(--r-sm); display:grid; place-items:center;
+      background:var(--surface-2); border:1px solid var(--border);
+      transition:border-color var(--transition), background var(--transition);
+    }
+    .btn-icon:hover { border-color:var(--border-hi); background:var(--surface-3); }
+    .topbar-back {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:8px 14px; border-radius:var(--r-sm); font-size:.85rem; font-weight:500;
+      background:var(--surface-2); border:1px solid var(--border);
+      transition:border-color var(--transition), background var(--transition);
+    }
+    .topbar-back:hover { border-color:var(--border-hi); background:var(--surface-2); }
+    .nfc-pill {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 12px; border-radius:99px; font-size:.77rem; font-weight:600; letter-spacing:.05em;
+      background:rgba(94,234,212,.08); border:1px solid rgba(94,234,212,.18); color:var(--accent);
+      text-transform:uppercase;
+    }
+
+    /* --- BUTTONS --- */
+    .btn {
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      min-height:44px; padding:11px 18px; border-radius:var(--r-sm);
+      font-weight:600; font-size:.88rem;
+      transition:transform var(--transition), box-shadow var(--transition), background var(--transition), border-color var(--transition);
+    }
+    .btn:hover { transform:translateY(-1px); }
+    .btn:active { transform:translateY(0); }
+    .btn-primary {
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      color:#041a18; box-shadow:0 4px 18px rgba(94,234,212,.22);
+    }
+    .btn-primary:hover { box-shadow:0 6px 28px rgba(94,234,212,.38); }
+    .btn-ghost { background:var(--surface-2); border:1px solid var(--border); }
+    .btn-ghost:hover { border-color:var(--border-hi); }
+    .btn-danger { background:rgba(248,113,113,.12); border:1px solid rgba(248,113,113,.2); color:var(--error); }
+
+    /* --- CARD --- */
+    .card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r-lg); padding:22px; box-shadow:var(--shadow-sm);
+    }
+    .card-title {
+      font-family:'Cinzel',serif; font-size:1.05rem; letter-spacing:.03em; margin-bottom:14px;
+    }
+
+    /* --- PIPS --- */
+    .pip {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:24px; height:24px; border-radius:50%; font-size:.7rem; font-weight:700;
+      border:2px solid; flex-shrink:0; line-height:1;
+    }
+    .pips { display:flex; gap:5px; flex-wrap:wrap; }
+    .pip-W { background:#f9f5e3; border-color:#c9b85c; color:#7a6522; }
+    .pip-U { background:#daeaf7; border-color:#4a90c4; color:#1a5d8a; }
+    .pip-B { background:#d5c9e8; border-color:#7b51b0; color:#4a2678; }
+    .pip-R { background:#fae0d8; border-color:#d9603a; color:#9c3215; }
+    .pip-G { background:#d8efd8; border-color:#4a9e4a; color:#235223; }
+
+    /* --- FORM --- */
+    .form-group { margin-bottom:14px; }
+    .form-label {
+      display:block; font-size:.78rem; font-weight:600; color:var(--muted);
+      text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width:100%; padding:11px 14px; border-radius:var(--r-sm);
+      background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+      font:inherit; font-size:.92rem;
+      transition:border-color var(--transition), box-shadow var(--transition);
+      -webkit-appearance:none;
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color:var(--faint); }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline:none; border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(94,234,212,.12);
+    }
+    .form-textarea { resize:vertical; min-height:80px; }
+    .form-select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b95a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:36px; }
+    .form-hint { font-size:.75rem; color:var(--faint); margin-top:5px; }
+    .color-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+    .color-toggle input { display:none; }
+    .color-toggle label {
+      display:flex; align-items:center; justify-content:center;
+      height:38px; border-radius:var(--r-sm); cursor:pointer;
+      border:2px solid transparent; transition:border-color var(--transition), opacity var(--transition);
+      font-weight:700; font-size:.88rem; opacity:.5;
+    }
+    .color-toggle input:checked + label { opacity:1; border-color:white; }
+    .cW label { background:#f9f5e3; color:#7a6522; }
+    .cU label { background:#daeaf7; color:#1a5d8a; }
+    .cB label { background:#d5c9e8; color:#4a2678; }
+    .cR label { background:#fae0d8; color:#9c3215; }
+    .cG label { background:#d8efd8; color:#235223; }
+
+    /* --- TOAST --- */
+    #toast {
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+      background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+      padding:12px 20px; border-radius:var(--r-md); font-size:.88rem; font-weight:500;
+      box-shadow:var(--shadow-md); z-index:9999; white-space:nowrap;
+      transition:transform .35s cubic-bezier(.16,1,.3,1), opacity .35s;
+      opacity:0; pointer-events:none;
+    }
+    #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+    /* --- MODAL --- */
+    .modal-backdrop {
+      position:fixed; inset:0; background:rgba(0,0,0,.7); backdrop-filter:blur(6px);
+      z-index:500; display:flex; align-items:center; justify-content:center; padding:16px;
+      opacity:0; pointer-events:none; transition:opacity .25s;
+    }
+    .modal-backdrop.open { opacity:1; pointer-events:all; }
+    .modal {
+      background:var(--surface); border:1px solid var(--border-hi);
+      border-radius:var(--r-xl); padding:28px; width:100%; max-width:520px;
+      max-height:88dvh; overflow-y:auto; box-shadow:var(--shadow-lg);
+      transform:scale(.96) translateY(12px); transition:transform .25s cubic-bezier(.16,1,.3,1);
+    }
+    .modal-backdrop.open .modal { transform:scale(1) translateY(0); }
+    .modal-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:22px; }
+    .modal-title { font-family:'Cinzel',serif; font-size:1.25rem; letter-spacing:.02em; }
+    .modal-close { color:var(--muted); transition:color var(--transition); flex-shrink:0; padding:4px; }
+    .modal-close:hover { color:var(--text); }
+    .modal-footer { display:flex; gap:10px; margin-top:22px; }
+    .modal-footer .btn { flex:1; }
+
+
+    body {
+      background:
+        radial-gradient(ellipse 55% 30% at 80% 5%, var(--theme-glow, rgba(94,234,212,.12)), transparent),
+        var(--bg);
+    }
+
+    /* HERO LAYOUT */
+    .hero-grid {
+      display:grid; grid-template-columns:280px 1fr; gap:24px;
+      padding-top:32px; align-items:start;
+    }
+    .art-card {
+      border-radius:var(--r-xl); overflow:hidden; position:relative;
+      border:1px solid var(--border);
+      box-shadow:0 20px 60px var(--theme-glow, rgba(94,234,212,.15)), var(--shadow-lg);
+    }
+    .art-card img {
+      width:100%; aspect-ratio:3/4; object-fit:cover;
+      display:block; background:var(--surface-2);
+    }
+    .art-label {
+      position:absolute; bottom:0; left:0; right:0; padding:12px 14px;
+      background:linear-gradient(to top,rgba(0,0,0,.85),transparent);
+      font-size:.74rem; color:#bbb;
+    }
+    .art-placeholder {
+      width:100%; aspect-ratio:3/4; background:var(--surface-2);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      color:var(--faint); font-size:.85rem; gap:10px; padding:20px; text-align:center;
+    }
+
+    .info-stack { display:flex; flex-direction:column; gap:18px; }
+
+    .hero-main {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r-lg); padding:26px; box-shadow:var(--shadow-sm);
+    }
+    .eyebrow { font-size:.74rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px; }
+    .commander-name {
+      font-family:'Cinzel',serif; font-size:clamp(1.7rem,4vw,2.8rem);
+      letter-spacing:.02em; margin-bottom:6px; line-height:1.1;
+    }
+    .deck-subtitle { color:var(--muted); font-size:.95rem; margin-bottom:18px; }
+
+    .badge-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:20px; }
+    .badge {
+      padding:7px 13px; border-radius:99px; font-size:.82rem;
+      background:var(--surface-2); border:1px solid var(--border); color:var(--muted);
+    }
+    .badge-power {
+      background:rgba(94,234,212,.1); border-color:rgba(94,234,212,.22);
+      color:var(--accent); font-weight:600;
+    }
+
+    .btn-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+    /* META GRID */
+    .meta-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .meta-item {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r-sm); padding:14px;
+    }
+    .meta-label { display:block; font-size:.72rem; color:var(--faint); text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
+    .meta-val { font-size:.9rem; line-height:1.5; }
+
+    /* LOWER SECTION */
+    .lower { display:grid; grid-template-columns:1.2fr .8fr; gap:18px; margin-top:18px; }
+
+    .strategy-text { color:var(--muted); font-size:.92rem; line-height:1.8; }
+
+    .nfc-block {
+      background:rgba(94,234,212,.06); border:1px solid rgba(94,234,212,.16);
+      border-radius:var(--r-sm); padding:14px; margin-top:14px;
+    }
+    .nfc-block-title {
+      display:flex; align-items:center; gap:7px;
+      font-size:.75rem; font-weight:700; color:var(--accent);
+      text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px;
+    }
+    .nfc-url {
+      display:block; font-size:.76rem; font-family:monospace;
+      background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.06);
+      border-radius:7px; padding:9px 12px; color:#5eead4;
+      word-break:break-all; margin-top:4px;
+    }
+    .copy-btn {
+      margin-top:8px; font-size:.78rem; color:var(--muted);
+      display:inline-flex; align-items:center; gap:5px;
+      padding:6px 11px; border-radius:var(--r-sm);
+      background:var(--surface-2); border:1px solid var(--border);
+      transition:color var(--transition), border-color var(--transition);
+    }
+    .copy-btn:hover { color:var(--accent); border-color:rgba(94,234,212,.3); }
+
+    .lost-block {
+      background:rgba(248,113,113,.06); border:1px solid rgba(248,113,113,.15);
+      border-radius:var(--r-sm); padding:16px;
+    }
+    .lost-block h3 { font-size:.95rem; margin-bottom:8px; }
+    .lost-block p { color:var(--muted); font-size:.88rem; line-height:1.7; }
+    .contact-row { display:flex; align-items:center; gap:8px; margin-top:10px; font-size:.88rem; }
+    .contact-row a { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
+
+    .footer { margin-top:56px; padding:20px 0; border-top:1px solid var(--border); text-align:center; color:var(--faint); font-size:.78rem; }
+
+    @media (max-width:720px) {
+      .hero-grid, .lower, .meta-grid, .btn-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a class="topbar-back" href="../../index.html">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    Alle Decks
+  </a>
+  <div class="topbar-actions">
+    <button class="btn-icon" id="edit-page-btn" title="Deck bearbeiten auf Übersichtsseite" onclick="window.location.href='../../index.html'">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </button>
+    <span class="nfc-pill">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 12a6 6 0 0 0 6 6"/><path d="M6 8a10 10 0 0 0 10 10"/><path d="M6 4a14 14 0 0 0 14 14"/></svg>
+      NFC
+    </span>
+  </div>
+</nav>
+
+<div class="wrap" id="page-content">
+  <!-- Filled by JS -->
+</div>
+
+<div id="toast"></div>
+
+<script>
+const STORE_KEY = 'mtg_decks_v2';
+const GITHUB_BASE = 'https://DEINUSERNAME.github.io/mtg-decks/decks/';
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch { return []; }
+}
+
+function pipsHtml(colors) {
+  return (colors||[]).map(c => `<span class="pip pip-${c}">${c}</span>`).join('');
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function copyUrl(url) {
+  navigator.clipboard.writeText(url).then(() => toast('URL kopiert ✓')).catch(()=>{});
+}
+
+function renderPage() {
+  // Get deck id from URL path: decks/{id}/index.html
+  const parts = window.location.pathname.split('/');
+  const id = parts[parts.length - 2];
+  const decks = load();
+  const d = decks.find(x => x.id === id);
+
+  const content = document.getElementById('page-content');
+
+  if (!d) {
+    content.innerHTML = `<div style="text-align:center;padding:80px 20px">
+      <p style="color:var(--muted);font-size:1rem">Deck nicht gefunden. Öffne zuerst die <a href="../../index.html" style="color:var(--accent)">Übersichtsseite</a>.</p>
+    </div>`;
+    return;
+  }
+
+  // Set theme color
+  const themeColors = { W:'#c9b85c', U:'#4a90c4', B:'#7b51b0', R:'#d9603a', G:'#4a9e4a' };
+  const firstColor = (d.colors||[])[0];
+  if (firstColor) {
+    document.documentElement.style.setProperty('--theme-glow', `rgba(${hexToRgb(themeColors[firstColor])},0.15)`);
+  }
+
+  document.title = d.name + ' – Commander Deck';
+  const nfcUrl = GITHUB_BASE + d.id + '/';
+
+  const imgHtml = d.image
+    ? `<img src="${d.image}" alt="${d.name} Artwork" loading="lazy" onerror="this.parentElement.innerHTML='<div class=art-placeholder><svg width=40 height=40 viewBox=\"0 0 24 24\" fill=none stroke=\"currentColor\" stroke-width=\"1\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\"/><circle cx=\"8.5\" cy=\"8.5\" r=\"1.5\"/><polyline points=\"21 15 16 10 5 21\"/></svg><span>Kein Bild verfügbar</span></div>'"/>`
+    : `<div class="art-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Kein Bild hinterlegt</span></div>`;
+
+  content.innerHTML = `
+    <section class="hero-grid">
+      <div class="art-card">${imgHtml}</div>
+      <div class="info-stack">
+        <div class="hero-main">
+          <p class="eyebrow">Commander Deck</p>
+          <h1 class="commander-name">${d.name}</h1>
+          <p class="deck-subtitle">${d.subtitle||''}</p>
+          <div class="badge-row">
+            <span class="pips">${pipsHtml(d.colors)}</span>
+            ${d.power ? `<span class="badge badge-power">Power ${d.power} / 10</span>` : ''}
+            ${d.updated ? `<span class="badge">Upd. ${d.updated}</span>` : ''}
+          </div>
+          <div class="btn-grid">
+            <a class="btn btn-primary" href="${d.archidekt}" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Archidekt öffnen
+            </a>
+            ${d.moxfield ? `<a class="btn btn-ghost" href="${d.moxfield}" target="_blank" rel="noopener">Moxfield</a>` : ''}
+            <a class="btn btn-ghost" href="#lost-found">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Lost & Found
+            </a>
+            <a class="btn btn-ghost" href="../../index.html">← Alle Decks</a>
+          </div>
+        </div>
+        <div class="meta-grid">
+          ${d.strategy ? `<div class="meta-item" style="grid-column:1/-1"><span class="meta-label">Gameplan</span><div class="meta-val" style="color:var(--muted)">${d.strategy}</div></div>` : ''}
+          ${d.tokens ? `<div class="meta-item"><span class="meta-label">Tokens / Extras</span><div class="meta-val">${d.tokens}</div></div>` : ''}
+          ${d.updated ? `<div class="meta-item"><span class="meta-label">Letztes Update</span><div class="meta-val">${d.updated}</div></div>` : ''}
+        </div>
+      </div>
+    </section>
+
+    <section class="lower" style="margin-top:22px">
+      <div class="card">
+        <h2 class="card-title">NFC-Tag Setup</h2>
+        <p style="color:var(--muted);font-size:.88rem">Schreibe diese URL mit <strong style="color:var(--text)">NFC Tools</strong> auf einen NTAG213/215-Sticker und klebe ihn auf deine Deckbox:</p>
+        <div class="nfc-block">
+          <div class="nfc-block-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 12a6 6 0 0 0 6 6"/><path d="M6 8a10 10 0 0 0 10 10"/><path d="M6 4a14 14 0 0 0 14 14"/></svg>
+            NFC URL für diese Deckbox
+          </div>
+          <code class="nfc-url">${nfcUrl}</code>
+          <button class="copy-btn" onclick="copyUrl('${nfcUrl}')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            URL kopieren
+          </button>
+        </div>
+      </div>
+
+      <div class="card" id="lost-found">
+        <h2 class="card-title">Lost & Found</h2>
+        <p style="color:var(--muted);font-size:.88rem;margin-bottom:12px">Wenn du diese Deckbox gefunden hast – melde dich bitte. Das Deck hat ideellen Wert.</p>
+        <div class="lost-block">
+          <h3>Kontakt</h3>
+          <p>Bitte kontaktiere mich unter:</p>
+          <div class="contact-row">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <a href="mailto:dein.name@example.com">dein.name@example.com</a>
+          </div>
+          <div class="contact-row">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Discord: DeinName#1234</span>
+          </div>
+          <div class="contact-row">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Hamburg, Deutschland</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">${d.name} · Commander Deck · NFC-Seite</footer>
+  `;
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+renderPage();
+</script>
+</body>
+</html>

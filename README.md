@@ -1,14 +1,25 @@
-# 🧙 MTG Commander Deck Pages
+# 🧙 MTG Commander Deck Collection v2
 
-GitHub Pages ready — NFC-powered deck box ID system for 10 Commander decks.
+GitHub Pages · NFC-powered · Edit-Modal für alle Decks
 
-## Struktur
+## Was ist neu in v2?
+
+- **Edit-Modal direkt im Browser**: Kein HTML-Code mehr bearbeiten.
+  Auf Stift-Icon klicken → Name, Bild-URL, Archidekt-Link, Farben, Power Level usw. ändern → Speichern.
+- **Deck hinzufügen**: "+ Deck hinzufügen"-Button → Formular ausfüllen → fertig.
+- **Bild-Vorschau**: Bild-URL eingeben und sofort sehen, ob das Bild stimmt.
+- **NFC-URL mit Copy-Button**: Auf jeder Deck-Seite steht die fertige URL zum Kopieren.
+- **5 Decks sind bereits als Beispiel vorgeladen** (Kaalia, Atraxa, Edgar, Meren, Krenko).
+
+## Dateien
 
 ```
-mtg-decks/
-├── index.html                    ← Übersicht aller Decks
+mtg-decks-v2/
+├── index.html          ← Hauptseite (Übersicht + Edit-Modal)
+├── deck.html           ← Dynamische Deck-Detailseite
+├── README.md
 └── decks/
-    ├── kaalia/index.html
+    ├── kaalia/index.html   ← Redirect → deck.html
     ├── atraxa/index.html
     ├── edgar/index.html
     ├── urdragon/index.html
@@ -22,45 +33,33 @@ mtg-decks/
 
 ## GitHub Pages Setup
 
-1. Neues öffentliches Repository auf GitHub erstellen, z.B. `mtg-decks`
-2. Alle Dateien in das Repository hochladen (Upload via Web UI oder `git push`)
-3. In GitHub → **Settings → Pages → Deploy from branch → main → / (root)**
-4. Warten (~1 Minute), dann ist die Site live unter:
+1. Neues **öffentliches** Repository anlegen (z.B. `mtg-decks`)
+2. ZIP entpacken und alle Dateien hochladen (Safari → github.com → Add file → Upload files)
+3. Settings → Pages → Deploy from branch → main → / (root) → Save
+4. ~1 Minute warten → Live unter:
    `https://DEINUSERNAME.github.io/mtg-decks/`
 
-## NFC-Tags programmieren
+## Bild-URL Tipp (Scryfall)
 
-Für jede Deckbox brauchst du einen **NTAG213** oder **NTAG215** Sticker.
+1. Gehe zu https://scryfall.com
+2. Suche deinen Commander
+3. Öffne die Karte → rechte Maustaste auf das Bild → "Bildadresse kopieren"
+4. Diese URL ins Edit-Formular unter "Commander Bild-URL" einfügen
 
-| Deck | NFC-Tag URL |
-|------|-------------|
-| Kaalia of the Vast | `https://DEINUSERNAME.github.io/mtg-decks/decks/kaalia/` |
-| Atraxa | `https://DEINUSERNAME.github.io/mtg-decks/decks/atraxa/` |
-| Edgar Markov | `https://DEINUSERNAME.github.io/mtg-decks/decks/edgar/` |
-| The Ur-Dragon | `https://DEINUSERNAME.github.io/mtg-decks/decks/urdragon/` |
-| Meren | `https://DEINUSERNAME.github.io/mtg-decks/decks/meren/` |
-| Breya | `https://DEINUSERNAME.github.io/mtg-decks/decks/breya/` |
-| Omnath | `https://DEINUSERNAME.github.io/mtg-decks/decks/omnath/` |
-| Krenko | `https://DEINUSERNAME.github.io/mtg-decks/decks/krenko/` |
-| Kenrith | `https://DEINUSERNAME.github.io/mtg-decks/decks/kenrith/` |
-| Wilhelt | `https://DEINUSERNAME.github.io/mtg-decks/decks/wilhelt/` |
+Beispiel: `https://cards.scryfall.io/art_crop/front/0/e/0eda2e3a...jpg`
 
-### App: NFC Tools (Android & iOS)
-1. App öffnen → **Write** → **Add a record** → **URL/URI**
-2. URL einfügen (aus Tabelle oben, mit deinem echten GitHub-Username)
-3. **Write** → Tag an Handy halten
+## NFC-Tags
 
-## Anpassungen
+- **Chip**: NTAG213 oder NTAG215 Sticker
+- **App**: NFC Tools (iOS & Android, kostenlos)
+- **URL**: Auf jeder Deck-Seite angezeigt und per Klick kopierbar
 
-In jeder `decks/DECKNAME/index.html`:
-- `<h1 class="commander-name">` → Commander-Name ändern
-- `<img src="...">` → eigene Commander-Artwork-URL einsetzen
-- Archidekt-Link im ersten Button (`href=`)
-- Kontaktdaten im Lost-&-Found-Bereich
-- Power Level, Farben, Strategie-Text, Mulligan-Hinweise
+Wenn du deinen GitHub-Username eingetragen hast (in index.html und deck.html `DEINUSERNAME` ersetzen), 
+werden die NFC-URLs automatisch korrekt angezeigt.
 
-## Commander-Bild
+## Kontaktdaten anpassen
 
-Einfachste Option: Screenshot vom Commander-Bild via Scryfall.
-`https://scryfall.com/search?q=kaalia+of+the+vast` → Karte öffnen → Bild-URL kopieren.
-Das Bild dann entweder direkt verlinken oder in den `decks/DECKNAME/`-Ordner hochladen.
+In `deck.html` einmalig suchen & ersetzen:
+- `dein.name@example.com` → deine E-Mail
+- `DeinName#1234` → dein Discord
+- `Hamburg, Deutschland` → dein Ort
